@@ -1,71 +1,75 @@
-/* Subscribe My youtube channel @skynet-robotics
-   This Code is trial and tested . No error in this code.
-   Note: if your servo rotate only one direction then adjust the sensitivity of soil sensor
-   you can see reading of soil sensor in the serial monitor */
+import math
 
-#include <Servo.h>
-Servo servo1;
-const int trigPin = 12;
-const int echoPin = 11;
-long duration;
-int distance=0;
-int potPin = A0;            
-int soil=0;
-int fsoil;
-int maxDryValue=1;       //this value decides how much humidity require to treat waste as wet object
-int Ultra_Distance=15;   //set Distance between Ultrasonic and moisture(soil) sensor in cm
-void setup() 
-{
-  Serial.begin(9600);
-pinMode(trigPin, OUTPUT); 
-pinMode(echoPin, INPUT); 
-servo1.attach(8);
-Serial.println("Soil Sensor     Ultrasonic          Servo");
-}
-void loop() 
-{
-  int soil=0;
-  for(int i=0;i<2;i++)
-  {
-digitalWrite(trigPin, LOW);
-delayMicroseconds(7);
-digitalWrite(trigPin, HIGH);
-delayMicroseconds(10);
-digitalWrite(trigPin, LOW);
-delayMicroseconds(10);
-duration = pulseIn(echoPin, HIGH);
-distance= duration*0.034/2+distance;
-delay(10);
+def frequency_to_time():
+    f = float(input("\nEnter Frequency (Hz): "))
+    if f > 0:
+        T = 1 / f
+        print(f"Time Period (T) = {T} seconds")
+    else:
+        print("Frequency must be greater than zero.")
 
-  }
-  distance=distance/2;
- 
-if (distance <Ultra_Distance && distance>1)
-{
-  delay(1000);
-for(int i=0;i<3;i++)
-{
-soil = analogRead(potPin) ;
-soil = constrain(soil, 485, 1023);
-fsoil = (map(soil, 485, 1023, 100, 0))+fsoil;
-delay(75);
-}
-fsoil=fsoil/3;
+def time_to_frequency():
+    T = float(input("\nEnter Time Period (seconds): "))
+    if T > 0:
+        f = 1 / T
+        print(f"Frequency (f) = {f} Hz")
+    else:
+        print("Time period must be greater than zero.")
 
-Serial.print("Humidity: ");
-Serial.print(fsoil);
-Serial.print("%"); Serial.print("    Distance: ");Serial.print(distance);Serial.print(" cm");
-if(fsoil>maxDryValue)
-{delay(1000);
-  Serial.println("     ==>WET Waste ");
-  servo1.write(170);
-delay(3000);} 
-else{ delay(1000);
-  Serial.println("     ==>Dry Waste ");
-servo1.write(10);
-delay(3000);}
+def wavelength_calculation():
+    v = float(input("\nEnter Wave Speed (m/s), e.g., 3.0e8 for light: "))
+    f = float(input("Enter Frequency (Hz): "))
+    if f > 0:
+        wavelength = v / f
+        print(f"Wavelength (λ) = {wavelength} meters")
+    else:
+        print("Frequency must be greater than zero.")
 
-servo1.write(90);}
-distance=0;
-fsoil=0;delay(1000);
-}
+def angular_frequency():
+    f = float(input("\nEnter Frequency (Hz): "))
+    if f > 0:
+        omega = 2 * math.pi * f
+        print(f"Angular Frequency (ω) = {omega} rad/s")
+    else:
+        print("Frequency must be greater than zero.")
+
+def damped_frequency():
+    f0 = float(input("\nEnter Natural Frequency (Hz): "))
+    zeta = float(input("Enter Damping Ratio (ζ): "))
+
+    if f0 > 0 and 0 <= zeta < 1:
+        fd = f0 * math.sqrt(1 - zeta**2)
+        print(f"Damped Frequency (fd) = {fd} Hz")
+    else:
+        print("Ensure f0 > 0 and 0 ≤ ζ < 1.")
+
+def main():
+    while True:
+        print("\nElectronics Frequency & Time Calculator")
+        print("1. Frequency to Time Period")
+        print("2. Time Period to Frequency")
+        print("3. Wavelength Calculation")
+        print("4. Angular Frequency")
+        print("5. Damped Frequency (RLC Circuit)")
+        print("6. Exit")
+
+        choice = input("Choose an option (1-6): ")
+
+        if choice == '1':
+            frequency_to_time()
+        elif choice == '2':
+            time_to_frequency()
+        elif choice == '3':
+            wavelength_calculation()
+        elif choice == '4':
+            angular_frequency()
+        elif choice == '5':
+            damped_frequency()
+        elif choice == '6':
+            print("Exiting... Goodbye!")
+            break
+        else:
+            print("Invalid choice. Try again.")
+
+if __name__ == "__main__":
+    main()
